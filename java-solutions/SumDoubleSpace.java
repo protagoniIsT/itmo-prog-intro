@@ -1,13 +1,13 @@
 import java.lang.StringBuilder;
-public class Sum {
+public class SumDoubleSpace {
     public static void main(String[] args) {
-        int totalSum = 0;
+        Double totalSum = 0.0;
         for (String arg : args) {
             StringBuilder curr = new StringBuilder();
             for (int j = 0; j < arg.length(); j++) {
-                if (Character.isWhitespace(arg.charAt(j))) {
+                if (Character.getType(arg.charAt(j)) == Character.SPACE_SEPARATOR) {
                     if (!curr.isEmpty()) {
-                        totalSum += Integer.parseInt(curr.toString());
+                        totalSum += Double.parseDouble(curr.toString());
                         curr.delete(0, curr.length());
                     }
                 } else {
@@ -15,7 +15,7 @@ public class Sum {
                 }
             }
             if (!curr.isEmpty()) {
-                totalSum += Integer.parseInt(curr.toString());
+                totalSum += Double.parseDouble(curr.toString());
                 curr.delete(0, curr.length());
             }
         }
