@@ -21,6 +21,5 @@ public class Test {
         StringBuilder sb = new StringBuilder();
         paragraph.toBBCode(sb);
         System.out.println(sb.toString());
-        //System.out.println(paragraph);
     }
 }
