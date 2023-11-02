@@ -4,32 +4,32 @@ import java.util.List;
 
 public abstract class AbstractMarkup implements Markdown {
     protected final List<? extends Markdown> items;
-    private final String initial;
-    private final String tagLeft;
-    private final String tagRight;
+    private final String markdownTag;
+    private final String openBBCodeTag;
+    private final String closeBBCodeTag;
 
 
-    protected AbstractMarkup(List<? extends Markdown> items, String initial, String tagLeft, String tagRight) {
+    protected AbstractMarkup(List<? extends Markdown> items, String markdownTag, String openBBCodeTag, String closeBBCodeTag) {
         this.items = items;
-        this.initial = initial;
-        this.tagLeft = tagLeft;
-        this.tagRight = tagRight;
+        this.markdownTag = markdownTag;
+        this.openBBCodeTag = openBBCodeTag;
+        this.closeBBCodeTag = closeBBCodeTag;
     }
     @Override
     public void toMarkdown(StringBuilder s) {
-        s.append(initial);
+        s.append(markdownTag);
         for (Markdown item: items) {
             item.toMarkdown(s);
         }
-        s.append(initial);
+        s.append(markdownTag);
     }
 
     @Override
     public void toBBCode(StringBuilder s) {
-        s.append(tagLeft);
+        s.append(openBBCodeTag);
         for (Markdown item: items) {
             item.toBBCode(s);
         }
-        s.append(tagRight);
+        s.append(closeBBCodeTag);
     }
 }
