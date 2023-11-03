@@ -35,7 +35,7 @@ public class ReverseMinCAbc {
         }
         return nums;
     }
-// СДЕЛАТЬ МАССИВ ИНТОВ
+
     public static void main(String[] args) throws IOException {
         String[] nums = new String[1];
         FastScanner input = new FastScanner(System.in);
