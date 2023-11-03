@@ -15,6 +15,7 @@ public abstract class AbstractMarkup implements Markdown {
         this.openBBCodeTag = openBBCodeTag;
         this.closeBBCodeTag = closeBBCodeTag;
     }
+    
     @Override
     public void toMarkdown(StringBuilder s) {
         s.append(markdownTag);
