@@ -3,9 +3,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class WordStatCount {
+    
     public static boolean isLegalCharacter(char ch) {
         return (Character.getType(ch) == Character.DASH_PUNCTUATION || Character.isLetter(ch) || ch == '\'');
     }
+    
     public static <K, V extends Comparable<V>> Map<K, V> sortByValues(final Map<K, V> map) {
         Comparator<K> valueComparator = new Comparator<K>() {
             @Override
