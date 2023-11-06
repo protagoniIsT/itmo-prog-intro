@@ -11,7 +11,7 @@ public class WsppSortedPosition {
         Map<Integer, Integer> amWordsInLine = new LinkedHashMap<>();
         FastScanner input = new FastScanner(new FileReader(args[0], StandardCharsets.UTF_8));
         while (input.hasNextLine()) {
-            String line = input.nextLine(); // НЕ ИСПОЛЬЗОВАТЬ NEXT LINE
+            String line = input.nextLine(); 
             FastScanner sc = new FastScanner(line);
             currLine++;
             int currIndex = 0;
