@@ -28,11 +28,13 @@ public class FastScanner {
     }
 
     public static boolean isLegalCharacter(char c) {
-        return (Character.getType(c) == Character.DASH_PUNCTUATION || Character.isLetter(c) || c == '\'' || Character.isDigit(c));
+        return (Character.getType(c) == Character.DASH_PUNCTUATION || 
+                                Character.isLetter(c) || c == '\'' || Character.isDigit(c));
     }
 
     public static boolean isLegalCharacterForWord(char c) {
-        return (Character.getType(c) == Character.DASH_PUNCTUATION || Character.isLetter(c) || c == '\'');
+        return (Character.getType(c) == Character.DASH_PUNCTUATION || 
+                                             Character.isLetter(c) || c == '\'');
     }
 
     private void fillBuffer() throws IOException {
