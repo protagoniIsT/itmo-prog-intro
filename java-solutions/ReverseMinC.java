@@ -12,6 +12,7 @@ public class ReverseMinC {
         }
         return minValue;
     }
+    
     public static int[] arraySizeIncrease(int[] nums, int size) {
         if (size == nums.length) {
             int[] newNums = new int[size * 3 / 2 + 1];
@@ -20,6 +21,7 @@ public class ReverseMinC {
         }
         return nums;
     }
+    
     public static int[][] matrixSizeIncrease(int[][] nums, int size) {
         if (size == nums.length) {
             int[][] newNums = new int[nums.length * 3 / 2 + 1][1];
