@@ -1,3 +1,5 @@
+![image](https://github.com/protagoniIsT/prog-intro/assets/96020589/6f31da34-4849-4024-a905-e457fd83e743)
+
 # Тесты к курсу «Введение в программирование»
 
 [Условия домашних заданий](https://www.kgeorgiy.info/courses/prog-intro/homeworks.html)
