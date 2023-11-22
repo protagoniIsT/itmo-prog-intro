@@ -1,4 +1,4 @@
-![image](https://github.com/protagoniIsT/prog-intro/assets/96020589/6f31da34-4849-4024-a905-e457fd83e743)
+![image](https://user-images.githubusercontent.com/114537512/252141899-d8cad421-11e9-4f10-9446-97ce05a5d589.gif)
 
 # Тесты к курсу «Введение в программирование»
 
