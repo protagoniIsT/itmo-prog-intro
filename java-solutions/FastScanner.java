@@ -9,7 +9,6 @@ public class FastScanner {
     private char[] charBuffer = new char[BUFFER_CAPACITY];
     private int index = 0;
     private int indicator;
-    private final String lineSeparator = System.lineSeparator();
 
     public FastScanner(Reader reader) throws IOException {
         this.input = reader;
