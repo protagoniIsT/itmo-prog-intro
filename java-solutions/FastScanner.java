@@ -9,6 +9,7 @@ public class FastScanner {
     private char[] charBuffer = new char[BUFFER_CAPACITY];
     private int index = 0;
     private int indicator;
+    private final String lineSeparator = System.lineSeparator();
 
     public FastScanner(Reader reader) throws IOException {
         this.input = reader;
@@ -28,13 +29,11 @@ public class FastScanner {
     }
 
     public static boolean isLegalCharacter(char c) {
-        return (Character.getType(c) == Character.DASH_PUNCTUATION || 
-                                Character.isLetter(c) || c == '\'' || Character.isDigit(c));
+        return (Character.getType(c) == Character.DASH_PUNCTUATION || Character.isLetter(c) || c == '\'' || Character.isDigit(c));
     }
 
     public static boolean isLegalCharacterForWord(char c) {
-        return (Character.getType(c) == Character.DASH_PUNCTUATION || 
-                                             Character.isLetter(c) || c == '\'');
+        return (Character.getType(c) == Character.DASH_PUNCTUATION || Character.isLetter(c) || c == '\'');
     }
 
     private void fillBuffer() throws IOException {
@@ -53,7 +52,7 @@ public class FastScanner {
 
     private static boolean isLineSeparator(char c) {
         return (c == '\n') || (c == '\u2028') || (c == '\u2029') ||
-                (c == '\u0085');
+                (c == '\u0085') || (c == '\r');
     }
 
     public boolean hasNext() throws IOException {
@@ -68,7 +67,6 @@ public class FastScanner {
         return indicator != -1;
     }
 
-    // NEXT
     public String next() throws IOException {
         StringBuilder expression = new StringBuilder();
         while (!isLegalCharacter(charBuffer[index]) && indicator != -1) {
@@ -93,17 +91,22 @@ public class FastScanner {
 
     public String nextLine() throws IOException {
         StringBuilder line = new StringBuilder();
-        if (isLineSeparator(charBuffer[index])) {
-            index++;
-            reformatBuffer();
-        }
         while (!isLineSeparator(charBuffer[index]) && indicator != -1) {
             line.append(charBuffer[index]);
             index++;
             reformatBuffer();
         }
-        index++;
-        reformatBuffer();
+        if (charBuffer[index] == '\r') {
+            index++;
+            reformatBuffer();
+            if (charBuffer[index] == '\n') {
+                index++;
+                reformatBuffer();
+            }
+        } else {
+            index++;
+            reformatBuffer();
+        }
         return line.toString();
     }
 
