@@ -4,6 +4,19 @@
 [Условия домашних заданий](https://www.kgeorgiy.info/courses/prog-intro/homeworks.html)
 
 
+## Домашнее задание 13. Разбор выражений
+
+Модификации
+ * *Base*
+    * Класс `ExpressionParser` должен реализовывать интерфейс
+        [TripleParser](java/expression/parser/TripleParser.java)
+    * Результат разбора должен реализовывать интерфейс
+        [TripleExpression](java/expression/TripleExpression.java)
+    * [Исходный код тестов](java/expression/parser/ParserTest.java)
+        * Первый аргумент: `easy` или `hard`
+        * Последующие аргументы: модификации
+
+
 ## Домашнее задание 12. Выражения
 
 Модификации
@@ -12,7 +25,15 @@
     * [Исходный код тестов](java/expression/ExpressionTest.java)
         * Первый аргумент: `easy` или `hard`.
         * Последующие аргументы: модификации.
-
+ * *Triple* (32-39)
+    * Дополнительно реализуйте поддержку выражений с тремя переменными: `x`, `y` и `z`.
+    * Интерфейс/тесты [TripleExpression](java/expression/TripleExpression.java).
+ * *BigInteger* (36, 37)
+    * Дополнительно реализуйте вычисления в типе `BigInteger`.
+    * Интерфейс/тесты [BigIntegerExpression](java/expression/BigIntegerExpression.java).
+ * *BigDecimal* (38, 39)
+    * Дополнительно реализуйте вычисления в типе `BigDecimal` .
+    * Интерфейс/тесты [BigDecimalExpression](java/expression/BigDecimalExpression.java).
 
 ## Домашнее задание 11. Игра m,n,k
 
