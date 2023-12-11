@@ -164,7 +164,7 @@ public class ExpressionParser implements TripleParser {
         return var;
     }
 
-    private void consume() {
+    private void movePointer() {
         if (index < expression.length()) {
             index++;
         }
@@ -174,7 +174,7 @@ public class ExpressionParser implements TripleParser {
         if (peek() != ')') {
             throw new RuntimeException("Expected '" + ')' + "' but found '" + peek() + "'");
         }
-        consume();
+        movePointer();
     }
 
     private char peek() {

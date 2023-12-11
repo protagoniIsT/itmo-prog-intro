@@ -22,7 +22,7 @@ public class ExpressionParser implements TripleParser {
         while (index < expression.length()) {
             char operation = peek();
             if (operation == '|') {
-                consume();
+                movePointer();
                 result = new Or((BasicExpressionInterface) result, (BasicExpressionInterface) parseBitXor());
             } else {
                 break;
@@ -36,7 +36,7 @@ public class ExpressionParser implements TripleParser {
         while (index < expression.length()) {
             char operation = peek();
             if (operation == '^') {
-                consume();
+                movePointer();
                 result = new Xor((BasicExpressionInterface) result, (BasicExpressionInterface) parseBitAnd());
             } else {
                 break;
@@ -50,7 +50,7 @@ public class ExpressionParser implements TripleParser {
         while (index < expression.length()) {
             char operation = peek();
             if (operation == '&') {
-                consume();
+                movePointer();
                 result = new And((BasicExpressionInterface) result, (BasicExpressionInterface) parseAdditive());
             } else {
                 break;
@@ -64,10 +64,10 @@ public class ExpressionParser implements TripleParser {
         while (index < expression.length()) {
             char operation = peek();
             if (operation == '+') {
-                consume();
+                movePointer();
                 result = new Add((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
             } else if (operation == '-') {
-                consume();
+                movePointer();
                 result = new Subtract((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
             } else {
                 break;
@@ -81,10 +81,10 @@ public class ExpressionParser implements TripleParser {
         while (index < expression.length()) {
             char operation = peek();
             if (operation == '*') {
-                consume();
+                movePointer();
                 result = new Multiply((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
             } else if (operation == '/') {
-                consume();
+                movePointer();
                 result = new Divide((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
             } else {
                 break;
@@ -97,12 +97,12 @@ public class ExpressionParser implements TripleParser {
         skipWhitespace();
         char currentChar = peek();
         if (currentChar == '(') {
-            consume();
+            movePointer();
             TripleExpression result = parseExpression();
             expect();
             return result;
         } else if (currentChar == '-') {
-            consume();
+            movePointer();
             return parseNegativeExpression();
         } else if (Character.isDigit(currentChar)) {
             return new Const(parseNumber(false));
@@ -118,14 +118,14 @@ public class ExpressionParser implements TripleParser {
         int minusCount = 1;
         while (peek() == '-') {
             minusCount++;
-            consume();
+            movePointer();
             skipWhitespace();
         }
         TripleExpression result;
         boolean isNegative = minusCount % 2 != 0;
 
         if (peek() == '(') {
-            consume();
+            movePointer();
             result = parseExpression();
             expect();
             if (isNegative) {
@@ -178,7 +178,7 @@ public class ExpressionParser implements TripleParser {
         return variable.toString();
     }
 
-    private void consume() {
+    private void movePointer() {
         if (index < expression.length()) {
             index++;
         }
@@ -188,7 +188,7 @@ public class ExpressionParser implements TripleParser {
         if (peek() != ')') {
             throw new RuntimeException("Expected '" + ')' + "' but found '" + peek() + "'");
         }
-        consume();
+        movePointer();
     }
 
     private char peek() {
