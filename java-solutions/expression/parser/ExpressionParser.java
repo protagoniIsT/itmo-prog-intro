@@ -123,7 +123,6 @@ public class ExpressionParser implements TripleParser {
         }
         TripleExpression result;
         boolean isNegative = minusCount % 2 != 0;
-
         if (peek() == '(') {
             consume();
             result = parseExpression();
