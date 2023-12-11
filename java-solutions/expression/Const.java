@@ -9,6 +9,10 @@ public class Const implements BasicExpressionInterface {
         this.value = value;
     }
 
+    public int getValue() {
+        return value;
+    }
+
     @Override
     public int evaluate(int value) {
         return this.value;
