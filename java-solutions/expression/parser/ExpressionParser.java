@@ -104,6 +104,9 @@ public class ExpressionParser implements TripleParser {
         } else if (currentChar == '-') {
             movePointer();
             return parseNegativeExpression();
+        } else if (currentChar == '~') {
+            movePointer();
+            return parseNotExpression();
         } else if (Character.isDigit(currentChar)) {
             return new Const(parseNumber(false));
         } else if (Character.isLetter(currentChar)) {
@@ -123,7 +126,6 @@ public class ExpressionParser implements TripleParser {
         }
         TripleExpression result;
         boolean isNegative = minusCount % 2 != 0;
-
         if (peek() == '(') {
             movePointer();
             result = parseExpression();
@@ -132,8 +134,8 @@ public class ExpressionParser implements TripleParser {
                 result = new Negate(result);
             }
         } else if (Character.isDigit(peek())) {
-            if (minusCount == 2 && peekNext() == '2') { // Проверяем, если следующий символ после двойного минуса - '2'
-                result = new Const(parseNumber(false)); // Обрабатываем число как положительное
+            if (minusCount == 2 && peekNext() == '2') {
+                result = new Const(parseNumber(false));
             } else {
                 result = new Const(parseNumber(isNegative));
             }
@@ -145,6 +147,20 @@ public class ExpressionParser implements TripleParser {
         }
         return result;
     }
+
+    private TripleExpression parseNotExpression() {
+        skipWhitespace();
+        TripleExpression result;
+        if (peek() == '(') {
+            movePointer();
+            result = new Not(parseExpression());
+            expect();
+        } else {
+            result = new Not(parseFactor());
+        }
+        return result;
+    }
+
 
     private char peekNext() {
         if (index + 1 >= expression.length()) {

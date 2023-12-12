@@ -42,7 +42,7 @@ public class CheckedNegate extends Negate {
     }
 
     @Override
-    public int evaluate(int x) {
-        return  -x;
+    public int evaluate(int value) {
+        return  -value;
     }
 }

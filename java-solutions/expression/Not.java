@@ -2,27 +2,27 @@ package expression;
 
 import java.util.Objects;
 
-public class Negate implements BasicExpressionInterface {
+public class Not implements BasicExpressionInterface {
     public final TripleExpression expression;
 
-    public Negate(TripleExpression expression) {
+    public Not(TripleExpression expression) {
         this.expression = expression;
     }
 
     @Override
     public int evaluate(int value) {
-        return  -value;
+        return  ~value;
     }
 
     @Override
     public int evaluate(int x, int y, int z) {
         int result = expression.evaluate(x, y, z);
-        return -result;
+        return ~result;
     }
 
     @Override
     public String toString() {
-        return "-(" + expression.toString() + ")";
+        return "~(" + expression.toString() + ")";
     }
 
     @Override
