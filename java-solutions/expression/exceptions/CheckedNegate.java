@@ -38,7 +38,7 @@ public class CheckedNegate extends Negate {
 
     @Override
     public int hashCode() {
-        return 31 * expression.hashCode();
+        return Objects.hash(expression) * 300;
     }
 
     @Override

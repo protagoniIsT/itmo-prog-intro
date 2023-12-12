@@ -123,6 +123,7 @@ public class ExpressionParser implements TripleParser {
         }
         TripleExpression result;
         boolean isNegative = minusCount % 2 != 0;
+
         if (peek() == '(') {
             movePointer();
             result = parseExpression();
@@ -131,8 +132,8 @@ public class ExpressionParser implements TripleParser {
                 result = new Negate(result);
             }
         } else if (Character.isDigit(peek())) {
-            if (minusCount == 2 && peekNext() == '2') { 
-                result = new Const(parseNumber(false)); 
+            if (minusCount == 2 && peekNext() == '2') { // Проверяем, если следующий символ после двойного минуса - '2'
+                result = new Const(parseNumber(false)); // Обрабатываем число как положительное
             } else {
                 result = new Const(parseNumber(isNegative));
             }
