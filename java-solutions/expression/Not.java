@@ -27,7 +27,7 @@ public class Not implements BasicExpressionInterface {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof final Negate negative) {
+        if (obj instanceof final Not negative) {
             return Objects.equals(expression, negative.expression);
         }
         return false;
