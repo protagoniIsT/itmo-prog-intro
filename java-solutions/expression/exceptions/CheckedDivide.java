@@ -5,7 +5,6 @@ import expression.BasicExpressionInterface;
 import expression.Divide;
 
 public class CheckedDivide extends Divide {
-
     public CheckedDivide(BasicExpressionInterface firstOperand, BasicExpressionInterface secondOperand) {
         super(firstOperand, secondOperand);
     }
@@ -19,10 +18,5 @@ public class CheckedDivide extends Divide {
             throw new ArithmeticException("Overflow");
         }
         return firstOperand / secondOperand;
-    }
-
-    @Override
-    protected String getOperator() {
-        return " / ";
     }
 }

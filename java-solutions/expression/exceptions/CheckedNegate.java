@@ -16,7 +16,7 @@ public class CheckedNegate extends Negate {
     @Override
     public int evaluate(int x, int y, int z) {
         int result = expression.evaluate(x, y, z);
-        if(result == Integer.MIN_VALUE){
+        if (result == Integer.MIN_VALUE){
             throw new RuntimeException("Cannot negate value" + result);
         }
         return -result;
@@ -39,10 +39,5 @@ public class CheckedNegate extends Negate {
     @Override
     public int hashCode() {
         return Objects.hash(expression) * 300;
-    }
-
-    @Override
-    public int evaluate(int value) {
-        return  -value;
     }
 }

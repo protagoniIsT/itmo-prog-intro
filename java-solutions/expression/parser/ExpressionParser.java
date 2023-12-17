@@ -12,18 +12,13 @@ public class ExpressionParser implements TripleParser {
         return parseExpression();
     }
 
-    private static boolean isLineSeparator(char c) {
-        return (c == '\n') || (c == '\u2028') || (c == '\u2029') ||
-                (c == '\u0085') || (c == '\r');
-    }
-
     private TripleExpression parseExpression() {
         TripleExpression result = parseBitXor();
         while (index < expression.length()) {
             char operation = peek();
             if (operation == '|') {
                 movePointer();
-                result = new Or((BasicExpressionInterface) result, (BasicExpressionInterface) parseBitXor());
+                result = createBinaryOperation(result, parseBitXor(), operation);
             } else {
                 break;
             }
@@ -37,7 +32,7 @@ public class ExpressionParser implements TripleParser {
             char operation = peek();
             if (operation == '^') {
                 movePointer();
-                result = new Xor((BasicExpressionInterface) result, (BasicExpressionInterface) parseBitAnd());
+                result = createBinaryOperation(result, parseBitAnd(), operation);
             } else {
                 break;
             }
@@ -51,7 +46,7 @@ public class ExpressionParser implements TripleParser {
             char operation = peek();
             if (operation == '&') {
                 movePointer();
-                result = new And((BasicExpressionInterface) result, (BasicExpressionInterface) parseAdditive());
+                result = createBinaryOperation(result, parseAdditive(), operation);
             } else {
                 break;
             }
@@ -63,12 +58,9 @@ public class ExpressionParser implements TripleParser {
         TripleExpression result = parseTerm();
         while (index < expression.length()) {
             char operation = peek();
-            if (operation == '+') {
+            if (operation == '+' || operation == '-') {
                 movePointer();
-                result = new Add((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
-            } else if (operation == '-') {
-                movePointer();
-                result = new Subtract((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
+                result = createBinaryOperation(result, parseTerm(), operation);
             } else {
                 break;
             }
@@ -80,12 +72,9 @@ public class ExpressionParser implements TripleParser {
         TripleExpression result = parseFactor();
         while (index < expression.length()) {
             char operation = peek();
-            if (operation == '*') {
+            if (operation == '*' || operation == '/') {
                 movePointer();
-                result = new Multiply((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
-            } else if (operation == '/') {
-                movePointer();
-                result = new Divide((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
+                result = createBinaryOperation(result, parseFactor(), operation);
             } else {
                 break;
             }
@@ -131,7 +120,7 @@ public class ExpressionParser implements TripleParser {
             result = parseExpression();
             expect();
             if (isNegative) {
-                result = new Negate(result);
+                result = createUnaryOperation(result, '-');
             }
         } else if (Character.isDigit(peek())) {
             if (minusCount == 2 && peekNext() == '2') {
@@ -142,7 +131,7 @@ public class ExpressionParser implements TripleParser {
         } else {
             result = parseFactor();
             if (isNegative) {
-                result = new Negate(result);
+                result = createUnaryOperation(result, '-');
             }
         }
         return result;
@@ -153,20 +142,12 @@ public class ExpressionParser implements TripleParser {
         TripleExpression result;
         if (peek() == '(') {
             movePointer();
-            result = new Not(parseExpression());
+            result = createUnaryOperation(parseExpression(), '~');
             expect();
         } else {
-            result = new Not(parseFactor());
+            result = createUnaryOperation(parseFactor(), '~');
         }
         return result;
-    }
-
-
-    private char peekNext() {
-        if (index + 1 >= expression.length()) {
-            return '\0';
-        }
-        return expression.charAt(index + 1);
     }
 
     private int parseNumber(boolean isNegative) {
@@ -194,6 +175,31 @@ public class ExpressionParser implements TripleParser {
         return variable.toString();
     }
 
+    private static boolean isLineSeparator(char c) {
+        return (c == '\n') || (c == '\t') || (c == '\r');
+    }
+
+    private TripleExpression createBinaryOperation(TripleExpression leftOp, TripleExpression rightOp, char operation) {
+        return switch (operation) {
+            case '+' -> new Add((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '-' -> new Subtract((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '*' -> new Multiply((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '/' -> new Divide((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '^' -> new Xor((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '|' -> new Or((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '&' -> new And((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            default -> throw new RuntimeException("Unexpected binary operator: " + operation);
+        };
+    }
+
+    private TripleExpression createUnaryOperation(TripleExpression operand, char operation) {
+        return switch (operation) {
+            case '-' -> new Negate(operand);
+            case '~' -> new Not(operand);
+            default -> throw new RuntimeException("Unexpected unary operator: " + operation);
+        };
+    }
+
     private void movePointer() {
         if (index < expression.length()) {
             index++;
@@ -211,6 +217,13 @@ public class ExpressionParser implements TripleParser {
         skipWhitespace();
         if (index >= expression.length()) return '\0';
         return expression.charAt(index);
+    }
+
+    private char peekNext() {
+        if (index + 1 >= expression.length()) {
+            return '\0';
+        }
+        return expression.charAt(index + 1);
     }
 
     private void skipWhitespace() {

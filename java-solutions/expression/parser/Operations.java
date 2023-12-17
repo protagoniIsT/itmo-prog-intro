@@ -5,6 +5,7 @@ import expression.common.ExpressionKind;
 import expression.common.Reason;
 
 import java.util.function.Consumer;
+import java.util.function.DoubleUnaryOperator;
 import java.util.function.LongBinaryOperator;
 import java.util.function.LongUnaryOperator;
 import java.util.stream.IntStream;
@@ -33,6 +34,23 @@ public final class Operations {
     public static final Operation LOW = unary("low", v -> Integer.lowestOneBit((int) v));
 
     public static final Operation NOT = unary("~", a -> ~a);
+
+    public static final Operation L_ZEROES = unary("l0", v -> Integer.numberOfLeadingZeros((int) v));
+    public static final Operation T_ZEROES = unary("t0", v -> Integer.numberOfTrailingZeros((int) v));
+
+
+    private static Operation checkedLogN(final String name, final DoubleUnaryOperator op) {
+        return unary(name, NEG_LOG.less(1, a -> (long) op.applyAsDouble(a)));
+    }
+    private static final Reason NEG_LOG = new Reason("Logarithm of negative value");
+    public static final Operation CHECKED_LOG_2 = checkedLogN("log2", a -> Math.log(a) / Math.log(2));
+
+    private static Operation checkedPowN(final String name, final int base, final int limit) {
+        return unary(name, NEG_POW.less(0, Reason.OVERFLOW.greater(limit, a -> (long) Math.pow(base, a))));
+    }
+    private static final Reason NEG_POW = new Reason("Exponentiation to negative power");
+    public static final Operation CHECKED_POW_2 = checkedPowN("pow2", 2, 31);
+
 
     private Operations() {
     }

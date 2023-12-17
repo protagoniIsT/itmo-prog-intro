@@ -14,19 +14,14 @@ public class ExpressionParser implements TripleParser {
         return parseExpression();
     }
 
-    private static boolean isLineSeparator(char c) {
-        return (c == '\n') || (c == '\u2028') || (c == '\u2029') ||
-                (c == '\u0085') || (c == '\r');
-    }
-
     private TripleExpression parseExpression() {
         isCorrectBracketSequence();
         TripleExpression result = parseTerm();
         while (true) {
             if (match('+')) {
-                result = new CheckedAdd((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
+                result = createBinaryOperation(result, parseTerm(), '+');
             } else if (match('-')) {
-                result = new CheckedSubtract((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
+                result = createBinaryOperation(result, parseTerm(), '-');
             } else {
                 break;
             }
@@ -38,9 +33,9 @@ public class ExpressionParser implements TripleParser {
         TripleExpression result = parseFactor();
         while (true) {
             if (match('*')) {
-                result = new CheckedMultiply((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
+                result = createBinaryOperation(result, parseFactor(), '*');
             } else if (match('/')) {
-                result = new CheckedDivide((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
+                result = createBinaryOperation(result, parseFactor(), '/');
             } else {
                 break;
             }
@@ -48,41 +43,11 @@ public class ExpressionParser implements TripleParser {
         return result;
     }
 
-    private void validateExpression() {
-        for (int i = 0; i < expression.length(); i++) {
-            char c = expression.charAt(i);
-            if (!isValidCharacterForValidation(c)) {
-                throw new RuntimeException("Invalid character: " + c);
-            }
-        }
-    }
-
-    private boolean isValidCharacterForValidation(char c) {
-        return Character.isDigit(c) || isVariable(c) || isOperator(c) || isBrackets(c) || Character.isWhitespace(c);
-    }
-
-    private void isCorrectBracketSequence() {
-        int balance = 0;
-        for (char c : expression.toCharArray()) {
-            if (c == '(') {
-                balance++;
-            } else if (c == ')') {
-                balance--;
-            }
-            if (balance < 0) {
-                throw new RuntimeException("Unmatched closing parenthesis found");
-            }
-        }
-        if (balance != 0) {
-            throw new RuntimeException("Unmatched opening parenthesis found");
-        }
-    }
-
     private TripleExpression parseFactor() {
         skipWhitespace();
         if (match('(')) {
             TripleExpression result = parseExpression();
-            expect();
+            expect(')');
             return result;
         } else if (match('-')) {
             if (Character.isDigit(peek())) {
@@ -91,12 +56,23 @@ public class ExpressionParser implements TripleParser {
             return new CheckedNegate((BasicExpressionInterface) parseFactor());
         } else if (Character.isDigit(peek())) {
             TripleExpression result = new Const(parseNumber(false));
-            checkNextSymbolAfterVarOrNumberWithSkipWhitespaces();
+            checkNextSymbolAfterVarOrNumber();
             return result;
         } else if (isVariable(peek())) {
             TripleExpression result = new Variable(parseVariable());
-            checkNextSymbolAfterVarOrNumberWithSkipWhitespaces();
+            checkNextSymbolAfterVarOrNumber();
             return result;
+        } else if (isUnaryOperationPart(peek())) {
+            String operation = parseUnaryOperator();
+            if (operation.equals("pow2") || operation.equals("log2")) {
+                if (peek() != '(') {
+                    skipWhitespace();
+                    if (Character.isLetterOrDigit(peek()) && !Character.isWhitespace(expression.charAt(index - 1))) {
+                        throw new RuntimeException("Unary operation '" + operation + "' must be followed by a whitespace");
+                    }
+                }
+            }
+            return createUnaryOperation(parseFactor(), operation);
         } else if (isOperator(peek())) {
             throw new RuntimeException("Unexpected operator: " + peek());
         } else if (peek() != '\0') {
@@ -106,35 +82,13 @@ public class ExpressionParser implements TripleParser {
         }
     }
 
-    private void checkNextSymbolAfterVarOrNumberWithSkipWhitespaces() {
-        skipWhitespace();
-        if (index < expression.length()) {
-            char nextChar = expression.charAt(index);
-            if (!isOperator(nextChar) && nextChar != ')') {
-                throw new RuntimeException("Syntax error: unexpected character '" + nextChar + "' after number or variable");
-            }
+    private String parseUnaryOperator() {
+        StringBuilder operation = new StringBuilder();
+        while (isUnaryOperationPart(peek()) && operation.length() != 4) {
+            operation.append(peek());
+            movePointer();
         }
-    }
-
-    private boolean match(char expected) {
-        skipWhitespace();
-        if (index < expression.length() && expression.charAt(index) == expected) {
-            index++;
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isVariable(char c) {
-        return c == 'x' || c == 'y' || c == 'z';
-    }
-
-    private boolean isOperator(char c) {
-        return c == '+' || c == '-' || c == '*' || c == '/';
-    }
-
-    private boolean isBrackets(char c) {
-        return c == ')' || c == '(';
+        return operation.toString();
     }
 
     private int parseNumber(boolean isNegative) {
@@ -164,15 +118,113 @@ public class ExpressionParser implements TripleParser {
         return var;
     }
 
+    private TripleExpression createBinaryOperation(TripleExpression leftOp, TripleExpression rightOp, char operation) {
+        return switch (operation) {
+            case '+' -> new CheckedAdd((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '-' -> new CheckedSubtract((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '*' -> new CheckedMultiply((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '/' -> new CheckedDivide((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '^' -> new Xor((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '|' -> new Or((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            case '&' -> new And((BasicExpressionInterface) leftOp, (BasicExpressionInterface) rightOp);
+            default -> throw new RuntimeException("Unknown binary operator: " + operation);
+        };
+    }
+
+    private TripleExpression createUnaryOperation(TripleExpression operand, String operation) {
+        return switch (operation) {
+            case "-" -> new CheckedNegate((BasicExpressionInterface) operand);
+            case "~" -> new Not(operand);
+            case "log2" -> new CheckedLog2(operand);
+            case "pow2" -> new CheckedPow2(operand);
+            default -> throw new RuntimeException("Unknown unary operator: " + operation);
+        };
+    }
+
+    private static boolean isLineSeparator(char c) {
+        return c == '\n' || c == '\t' || c == '\r' || c == '\f';
+    }
+
+    private boolean isUnaryOperationPart(char c) {
+        return c == 'p' || c == 'o' || c == 'w' || c == 'l' || c == 'g' || c == '2';
+    }
+
+    private boolean isVariable(char c) {
+        return c == 'x' || c == 'y' || c == 'z';
+    }
+
+    private boolean isOperator(char c) {
+        return c == '+' || c == '-' || c == '*' ||
+                c == '/' || c == '^' || c == '|' || c == '&';
+    }
+
+    private boolean isBrackets(char c) {
+        return c == '(' || c == ')';
+    }
+
+    private boolean isLegalCharacter(char c) {
+        return Character.isDigit(c) || isVariable(c) || isOperator(c) || isBrackets(c) ||
+                Character.isWhitespace(c) || c == 'p' || c == 'o' || c == 'w' || c == 'g' || c == 'l' || c == '2';
+    }
+
+    private boolean isWhitespaceOrInvisible(char c) {
+        return Character.isWhitespace(c) || isLineSeparator(c);
+    }
+
+    private void validateExpression() {
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+            if (!isLegalCharacter(c)) {
+                throw new RuntimeException("Invalid character: " + c);
+            }
+        }
+    }
+
+    private void isCorrectBracketSequence() {
+        int balance = 0;
+        for (char c : expression.toCharArray()) {
+            if (c == '(') {
+                balance++;
+            } else if (c == ')') {
+                balance--;
+            }
+            if (balance < 0) {
+                throw new RuntimeException("Unmatched closing parenthesis found");
+            }
+        }
+        if (balance != 0) {
+            throw new RuntimeException("Unmatched opening parenthesis found");
+        }
+    }
+
+    private void checkNextSymbolAfterVarOrNumber() {
+        skipWhitespace();
+        if (index < expression.length()) {
+            char nextChar = expression.charAt(index);
+            if (!isOperator(nextChar) && nextChar != ')') {
+                throw new RuntimeException("Error while parsing: unexpected character '" + nextChar + "' after number or variable");
+            }
+        }
+    }
+
+    private boolean match(char expected) {
+        skipWhitespace();
+        if (index < expression.length() && expression.charAt(index) == expected) {
+            index++;
+            return true;
+        }
+        return false;
+    }
+
     private void movePointer() {
         if (index < expression.length()) {
             index++;
         }
     }
 
-    private void expect() {
-        if (peek() != ')') {
-            throw new RuntimeException("Expected '" + ')' + "' but found '" + peek() + "'");
+    private void expect(char expected) {
+        if (peek() != expected) {
+            throw new RuntimeException("Expected '" + expected + "', actual: '" + peek() + "'");
         }
         movePointer();
     }
@@ -192,9 +244,5 @@ public class ExpressionParser implements TripleParser {
         while (index < expression.length() && isWhitespaceOrInvisible(expression.charAt(index))) {
             index++;
         }
-    }
-
-    private boolean isWhitespaceOrInvisible(char c) {
-        return Character.isWhitespace(c) || isLineSeparator(c);
     }
 }

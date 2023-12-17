@@ -4,7 +4,6 @@ import expression.BasicExpressionInterface;
 import expression.Subtract;
 
 public class CheckedSubtract extends Subtract {
-
     public CheckedSubtract(BasicExpressionInterface firstOperand, BasicExpressionInterface secondOperand) {
         super(firstOperand, secondOperand);
     }
@@ -16,10 +15,5 @@ public class CheckedSubtract extends Subtract {
             throw new ArithmeticException("Overflow");
         }
         return (int) result;
-    }
-
-    @Override
-    protected String getOperator() {
-        return " - ";
     }
 }

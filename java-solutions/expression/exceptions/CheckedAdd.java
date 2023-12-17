@@ -15,9 +15,4 @@ public class CheckedAdd extends Add {
         }
         return (int) result;
     }
-
-    @Override
-    public String getOperator() {
-        return " + ";
-    }
 }
