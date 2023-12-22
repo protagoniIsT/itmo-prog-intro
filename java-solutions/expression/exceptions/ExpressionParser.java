@@ -74,9 +74,9 @@ public class ExpressionParser implements TripleParser {
             }
             return createUnaryOperation(parseFactor(), operation);
         } else if (isOperator(peek())) {
-            throw new RuntimeException("Unexpected operator: " + peek());
+            throw new RuntimeException("Unexpected operator: " + peek() + " on position " + index);
         } else if (peek() != '\0') {
-            throw new RuntimeException("Unexpected character: " + peek());
+            throw new RuntimeException("Unexpected character: " + peek() + " on position " + index);
         } else {
             throw new RuntimeException("Unexpected end of expression");
         }
@@ -113,7 +113,7 @@ public class ExpressionParser implements TripleParser {
         }
         String var = variable.toString();
         if (!var.equals("x") && !var.equals("y") && !var.equals("z")) {
-            throw new RuntimeException("Invalid variable: " + var);
+            throw new RuntimeException("Invalid variable: " + var + " on position " + index);
         }
         return var;
     }
@@ -175,7 +175,7 @@ public class ExpressionParser implements TripleParser {
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
             if (!isLegalCharacter(c)) {
-                throw new RuntimeException("Invalid character: " + c);
+                throw new RuntimeException("Invalid character: " + c + " on position " + index);
             }
         }
     }
