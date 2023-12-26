@@ -1,6 +1,5 @@
 package expression.exceptions;
 
-
 import expression.BasicExpressionInterface;
 import expression.Divide;
 
