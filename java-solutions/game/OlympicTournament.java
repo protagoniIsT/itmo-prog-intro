@@ -32,7 +32,7 @@ public class OlympicTournament {
         for (int i = 1; i <= numberOfPlayers; i++) {
             numbers.add(i);
         }
-        int currPlace = (int) Math.log(numberOfPlayers) + 1;
+        int currPlace = (int) (Math.log(numberOfPlayers) / Math.log(2)) + 1;
         while (players.size() > 1) {
             ArrayList<Player> winners = new ArrayList<>();
             ArrayList<String> playersPlace = new ArrayList<>();
