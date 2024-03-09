@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.util.Arrays;
 
 public class Reverse {
+    
     public static int[] arraySizeIncrease(int[] nums, int size) {
         if (size == nums.length) {
             int[] newNums = new int[size * 3 / 2 + 1];
