@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class TicTacToeBoard implements Board, Position {
+    
     private static final Map<Cell, Character> SYMBOLS = Map.of(
             Cell.X, 'X',
             Cell.O, 'O',
