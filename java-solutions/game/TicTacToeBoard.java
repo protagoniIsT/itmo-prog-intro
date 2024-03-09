@@ -75,11 +75,11 @@ public class TicTacToeBoard implements Board, Position {
         return  countValues(move, 0, -1) +
                 countValues(move, 0, 1) >= k - 1 ||
                 countValues(move, -1, 0) +
-                        countValues(move, 1, 0) >= k - 1 ||
+                countValues(move, 1, 0) >= k - 1 ||
                 countValues(move, -1, -1) +
-                        countValues(move, 1, 1) >= k - 1 ||
+                countValues(move, 1, 1) >= k - 1 ||
                 countValues(move, -1, 1) +
-                        countValues(move, 1, -1) >= k - 1;
+                countValues(move, 1, -1) >= k - 1;
     }
 
     protected boolean isValidPosition(int row, int col) {
